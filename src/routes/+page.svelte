@@ -1,10 +1,17 @@
 <script>
-	// import test component
-	import Test from '../components/test.svelte';
-	import { QueryClient, QueryClientProvider } from 'svelte-query';
-	const queryClient = new QueryClient();
+	import { page } from '$app/stores';
+
+	const result = $page.data.props;
 </script>
 
-<QueryClientProvider client={queryClient}>
-	<Test />
-</QueryClientProvider>
+{#if !result}
+	<p>Loading...</p>
+{:else if result.error}
+	<p>Error: {result.error.message}</p>
+{:else}
+	<ul>
+		{#each result.ingredients as ingredient}
+			<li>{ingredient.name}</li>
+		{/each}
+	</ul>
+{/if}
