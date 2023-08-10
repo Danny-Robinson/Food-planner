@@ -1,5 +1,5 @@
 import { getClient } from '$lib/utils/getClient';
-import { getIngredients } from '$lib/utils/queries/getIngredients';
+import { getIngredients } from '$lib/queries/getIngredients';
 import type { Load } from '@sveltejs/kit';
 
 export const load: Load = async () => {
