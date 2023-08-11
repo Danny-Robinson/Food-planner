@@ -18,13 +18,13 @@
 
 	let ingredientName = '';
 
-	async function fetchIngredients() {
+	const fetchIngredients = async () => {
 		const client = getClient();
 		const { data } = await client.query(getIngredients, {});
 		ingredientsStore.set(data.ingredients);
-	}
+	};
 
-	async function add() {
+	const add = async () => {
 		const result = await client.mutation(addIngredient, { name: ingredientName });
 
 		if (result.error) {
@@ -32,18 +32,17 @@
 		} else {
 			fetchIngredients();
 		}
-	}
+	};
 
-	async function deleteI(id: any) {
+	const deleteIng = async (id: any) => {
 		const result = await client.mutation(deleteIngredient, { id });
 
-		console.log(result);
 		if (result.error) {
 			console.error('Failed to delete ingredient:', result.error);
 		} else {
 			fetchIngredients();
 		}
-	}
+	};
 </script>
 
 {#if !result}
@@ -64,7 +63,7 @@
 		{#each ingredients as ingredient}
 			<li>
 				{ingredient.name}
-				<button on:click={() => deleteI(ingredient.id)}>Delete</button>
+				<button on:click={() => deleteIng(ingredient.id)}>Delete</button>
 			</li>
 		{/each}
 	</ul>
