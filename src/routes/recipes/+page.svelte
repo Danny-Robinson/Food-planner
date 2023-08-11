@@ -1,5 +1,27 @@
-<script>
-    import { goto } from '$app/navigation';
+
+<script lang='ts'>
+ 	import { recipesStore } from '$lib/stores/recipesStore';
+    type Recipe = {
+        id: number;
+        name: string;
+        cooking_time: number; 
+      };
+
+    let recipes: Recipe[] = [];
+	$: recipes = $recipesStore;
+
+	recipesStore.subscribe((value) => {
+		recipes = value;
+	});
 </script>
 
-<button on:click={() => goto('/recipes/add')}>Add a new Recipe</button>
+
+ 
+{#if recipes && recipes.length}
+  {#each recipes as recipe}
+    <div>
+      <a href={"/recipes/" + recipe.id}>{recipe.name}</a>
+      <p>Cooking time: {recipe.cooking_time} mins</p>
+    </div>
+  {/each}
+{/if}

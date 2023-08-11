@@ -5,8 +5,9 @@
 	import { getIngredients } from '$lib/queries/getIngredients';
 	import { ingredientsStore } from '$lib/stores/ingredientsStore';
 	import { getClient } from '$lib/utils/getClient';
-
-	let ingredients: { name: string; id: string }[] = [];
+	import type { GetIngredientsQuery, AddIngredientMutation, DeleteIngredientMutation, Ingredients } from '../../generated/graphql';
+ 
+	let ingredients: Ingredients[] = [];
 	$: ingredients = $ingredientsStore;
 
 	ingredientsStore.subscribe((value) => {
@@ -20,14 +21,13 @@
 
 	const fetchIngredients = async () => {
 		const client = getClient();
-		const { data } = await client.query(getIngredients, {});
-		ingredientsStore.set(data.ingredients);
+		const { data } = await client.query<GetIngredientsQuery>(getIngredients, {});
+		ingredientsStore.set(data?.ingredients || []);
 	};
 
 	const add = async () => {
-		const result = await client.mutation(addIngredient, { name: ingredientName });
-
-		if (result.error) {
+		const result = await client.mutation<AddIngredientMutation>(addIngredient, { name: ingredientName });
+ 		if (result.error) {
 			console.error('Failed to add ingredient:', result.error);
 		} else {
 			fetchIngredients();
@@ -35,7 +35,7 @@
 	};
 
 	const deleteIng = async (id: any) => {
-		const result = await client.mutation(deleteIngredient, { id });
+		const result = await client.mutation<DeleteIngredientMutation>(deleteIngredient, { id });
 
 		if (result.error) {
 			console.error('Failed to delete ingredient:', result.error);
