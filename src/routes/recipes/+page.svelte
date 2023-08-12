@@ -16,7 +16,7 @@
 </script>
 
 
- 
+<a href='/recipes/add'>add recipe</a>
 {#if recipes && recipes.length}
   {#each recipes as recipe}
     <div>

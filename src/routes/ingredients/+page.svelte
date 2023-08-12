@@ -18,7 +18,7 @@
 	const result = $page.data.props;
 
 	let ingredientName = '';
-
+	let ingredientUnit = '';
 	const fetchIngredients = async () => {
 		const client = getClient();
 		const { data } = await client.query<GetIngredientsQuery>(getIngredients, {});
@@ -26,7 +26,7 @@
 	};
 
 	const add = async () => {
-		const result = await client.mutation<AddIngredientMutation>(addIngredient, { name: ingredientName });
+		const result = await client.mutation<AddIngredientMutation>(addIngredient, { name: ingredientName, unit: ingredientUnit });
  		if (result.error) {
 			console.error('Failed to add ingredient:', result.error);
 		} else {
@@ -44,7 +44,7 @@
 		}
 	};
 </script>
-
+<!-- add unit to ingredient -->
 {#if !result}
 	<p>Loading...</p>
 {:else if result.error}
@@ -54,7 +54,10 @@
 	<form on:submit|preventDefault={add}>
 		<label for="ingredientName">Ingredient Name:</label>
 		<input type="text" id="ingredientName" bind:value={ingredientName} required />
-
+	
+		<label for="ingredientUnit">Unit:</label>
+		<input type="text" id="ingredientUnit" bind:value={ingredientUnit} placeholder="e.g., g, ml, pcs" />
+	
 		<button type="submit">Add Ingredient</button>
 	</form>
 
@@ -63,6 +66,9 @@
 		{#each ingredients as ingredient}
 			<li>
 				{ingredient.name}
+				{#if ingredient.unit}
+					({ingredient.unit})
+				{/if}
 				<button on:click={() => deleteIng(ingredient.id)}>Delete</button>
 			</li>
 		{/each}

@@ -8,10 +8,10 @@ export const getRecipeDetails = gql`
       cooking_time
       recipes_recipe_ingredients {
         quantity
-        unit
         recipe_ingredients_ingredient { 
           id
           name
+          unit
         }
       }
       recipes_instructions {

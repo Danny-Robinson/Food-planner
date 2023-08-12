@@ -1,10 +1,10 @@
+import { goto } from "$app/navigation";
 import type { Client } from "@urql/svelte";
 
 type IngredientInput = {
-    id: number;
+    ingredient_id: number;
     quantity: number;
-    unit: string;
-};
+ };
 
 type InstructionInput = {
     step_number: number;
@@ -48,11 +48,12 @@ export const createRecipeWithDetails = async (client: Client, recipeData: Recipe
     `;
 
     const recipeIngredientsObjects = ingredients.map(ing => ({
-        ingredient_id: ing.id,
+        ingredient_id: ing.ingredient_id,
         recipe_id: recipeId,
         quantity: ing.quantity,
-        unit: ing.unit
-    }));
+     }));
+
+     console.log(recipeIngredientsObjects)
 
     await client.mutation(createRecipeIngredientsMutation, {
         objects: recipeIngredientsObjects
@@ -77,5 +78,6 @@ export const createRecipeWithDetails = async (client: Client, recipeData: Recipe
         objects: instructionObjects
     });
 
+    goto(`/recipes/${recipeId}`)
     return recipeId; // Return the ID of the created recipe
 }

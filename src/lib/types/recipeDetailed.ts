@@ -1,6 +1,7 @@
 type Ingredient = {
     id: number;
     name: string;
+    unit: string;
   };
   
   type RecipeIngredient = {

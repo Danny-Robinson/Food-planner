@@ -2,7 +2,7 @@
     import { ingredientsStore } from '$lib/stores/ingredientsStore';
     import { get } from 'svelte/store';
     import { onMount } from 'svelte';
-    import type { Recipe_Ingredients, Ingredients } from '../../../generated/graphql';
+    import type {  Ingredients } from '../../../generated/graphql';
 	import { createRecipeWithDetails } from '$lib/utils/createRecipeWithDetails';
 	import { getClient } from '$lib/utils/getClient';
 
@@ -10,8 +10,16 @@
     let cookingTime = '';
     let instructions = [''];
 
-    // Ingredients added to the recipe
-    let recipeIngredients: (Partial<Recipe_Ingredients> & {name: string})[] = [{ id: 0, name: '', quantity: 0, unit: '' }];
+    type UserIngredient = {
+        displayName?: string,
+        ingredient_id: number,
+        quantity: number
+    };    // Ingredients added to the recipe
+    let recipeIngredients: UserIngredient[] = [{
+        displayName: '',
+        ingredient_id: 0,
+        quantity: 0
+    }];
 
     // All available ingredients (from the BE)
     let allIngredients: Ingredients[] = [];
@@ -22,7 +30,7 @@
     }
 
     const addIngredient = () => {
-        recipeIngredients.push({ id: 0, quantity: 0, unit: '', name: '' });
+        recipeIngredients.push({ ingredient_id: 0, quantity: 0 });
         recipeIngredients = [...recipeIngredients];
     }
 
@@ -31,14 +39,19 @@
         const recipeData = {
             name: recipeName,
             cookingTime: parseInt(cookingTime, 10),
-             instructions: instructions.map(
+            instructions: instructions.map(
                 (instruction, index) => ({ step_number: index + 1, description: instruction })),
-            ingredients: recipeIngredients
+            ingredients: recipeIngredients.map(ri => ({
+                ingredient_id: ri.ingredient_id,
+                quantity: ri.quantity
+            }))
         };
 
-        createRecipeWithDetails(getClient(), recipeData)
+        createRecipeWithDetails(getClient(), recipeData);
         console.log("Submitted Recipe Data:", recipeData);
-    }
+    };
+
+
 
     const removeIngredient = (index: number) => {
         recipeIngredients.splice(index, 1);
@@ -50,10 +63,17 @@
         instructions = [...instructions];
     }
 
-    const getIngredientIdByName = (name: string): number => {
-        const ingredient = allIngredients.find(ing => ing.name === name);
-        return ingredient ? ingredient.id : 0;
-    }
+    const setIngredientDetailsByName = (ingredient: UserIngredient) => {
+        const matchedIngredient = allIngredients.find(ing => `${ing.name} (${ing.unit})` === ingredient.displayName);
+        if (matchedIngredient) {
+            ingredient.ingredient_id = matchedIngredient.id;
+            ingredient.displayName = `${matchedIngredient.name} (${matchedIngredient.unit})`;
+        } else {
+            ingredient.ingredient_id = 0;
+            ingredient.displayName = '';
+        }
+    };
+
 
     onMount(() => {
         allIngredients = get(ingredientsStore);
@@ -82,16 +102,22 @@
 
     {#each recipeIngredients as ingredient, i}
     <div class="ingredient-item">
-        <input bind:value={ingredient.name} on:input={() => { ingredient.id = getIngredientIdByName(ingredient.name); }} placeholder="Ingredient Name" list="ingredient-list" />
-        <input type="number" bind:value={ingredient.quantity} placeholder="Quantity" />
-        <input bind:value={ingredient.unit} placeholder="Unit (e.g. cup, tsp, g)" />
-        <button on:click|preventDefault={() => removeIngredient(i)}>Delete</button>
+        <input bind:value={ingredient.displayName} 
+            on:input={() => setIngredientDetailsByName(ingredient)} 
+            on:change={() => setIngredientDetailsByName(ingredient)} 
+            placeholder="Ingredient Name" list="ingredient-list"
+        />
+        <input type="number" 
+            bind:value={ingredient.quantity} 
+            placeholder="Quantity" 
+        />
+         <button on:click|preventDefault={() => removeIngredient(i)}>Delete</button>
     </div>
     {/each}
 
     <datalist id="ingredient-list">
         {#each allIngredients as item}
-            <option value={item.name}></option>
+            <option value="{item.name} ({item.unit})"></option>
         {/each}
     </datalist>
 

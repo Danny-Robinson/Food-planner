@@ -5,6 +5,7 @@ const getIngredients = gql`
 		ingredients {
 			id
 			name
+			unit
 		}
 	}
 `;

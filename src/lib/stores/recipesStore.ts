@@ -9,8 +9,14 @@ async function fetchData() {
     return data?.recipes;
 }
 
+type RecipesStore = {
+    id: Recipes['id'];
+    name: Recipes['name']
+    cooking_time: Recipes['cooking_time']
+}[]
+
 const createRecipesStore = () => {
-    const store = writable<Recipes[]>([]);
+    const store = writable<RecipesStore>([]);
 
     fetchData().then((recipe) => {
         store.set(recipe || []);
