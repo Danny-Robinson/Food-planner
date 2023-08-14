@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store';
 import { getClient } from '$lib/utils/getClient';
-import { getIngredients } from '$lib/queries/getIngredients';
-import type { GetIngredientsQuery, Ingredients } from '../../generated/graphql';
+ import type { GetIngredientsQuery, Ingredients } from '../../generated/graphql';
+import { GET_INGREDIENTS_QUERY } from '$lib/queries';
 
 async function fetchData() {
     const client = getClient();
-    const { data } = await client.query<GetIngredientsQuery>(getIngredients, {});
+    const { data } = await client.query<GetIngredientsQuery>(GET_INGREDIENTS_QUERY, {});
     return data?.ingredients;
 }
 

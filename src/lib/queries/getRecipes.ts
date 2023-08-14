@@ -1,6 +1,6 @@
 import { gql } from '@urql/svelte';
 
-const getRecipes = gql`
+export const GET_RECIPES_QUERY = gql`
 	query getRecipes {
 		recipes {
             id
@@ -8,6 +8,4 @@ const getRecipes = gql`
             cooking_time
  		}
 	}
-`;
-
-export { getRecipes };
+`; 

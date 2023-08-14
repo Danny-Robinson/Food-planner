@@ -26,8 +26,6 @@
             }
         }
     }
-
-    $: console.log(recipe);
      
 </script>
  

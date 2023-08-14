@@ -1,6 +1,6 @@
 import { gql } from '@urql/svelte';
 
-const getIngredients = gql`
+export const GET_INGREDIENTS_QUERY = gql`
 	query getIngredients {
 		ingredients {
 			id
@@ -9,5 +9,4 @@ const getIngredients = gql`
 		}
 	}
 `;
-
-export { getIngredients };
+ 

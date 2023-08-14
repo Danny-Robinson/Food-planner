@@ -1,6 +1,6 @@
 import { gql } from '@urql/svelte';
 
-export const getRecipeDetails = gql`
+export const GET_RECIPE_DETAILS_QUERY = gql`
   query GetRecipeDetails($id: Int!) {
     recipes_by_pk(id: $id) {
       id

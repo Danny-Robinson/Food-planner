@@ -1,4 +1,4 @@
-import { getRecipeDetails } from '$lib/queries/getRecipeDetails';
+import { GET_RECIPE_DETAILS_QUERY } from '$lib/queries/getRecipeDetails';
 import { getClient } from '$lib/utils/getClient';
 import type { Load } from '@sveltejs/kit';
  
@@ -7,7 +7,7 @@ export const load: Load = async ({ params }) => {
     const client = getClient();
     const id = params.id;
 
-    const response = await client.query(getRecipeDetails, {
+    const response = await client.query(GET_RECIPE_DETAILS_QUERY, {
         id: id
     });
 

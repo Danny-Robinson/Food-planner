@@ -1026,7 +1026,7 @@
     "@rollup/plugin-node-resolve" "^15.0.1"
     "rollup" "^3.7.0"
 
-"@sveltejs/kit@^1.0.0", "@sveltejs/kit@^1.20.4":
+"@sveltejs/kit@^1.0.0", "@sveltejs/kit@^1.20.4", "@sveltejs/kit@1.x":
   "integrity" "sha512-Opkqw1QXk4Cc25b/heJP2D7mX+OUBFAq4MXKfET58svTTxdeiHFKzmnuRsSF3nmxESqrLjqPAgHpib+knNGzRw=="
   "resolved" "https://registry.npmjs.org/@sveltejs/kit/-/kit-1.22.4.tgz"
   "version" "1.22.4"
@@ -3176,7 +3176,7 @@
     "sorcery" "^0.11.0"
     "strip-indent" "^3.0.0"
 
-"svelte@^3.0.0 || ^4.0.0", "svelte@^3.19.0 || ^4.0.0", "svelte@^3.2.0 || ^4.0.0-next.0", "svelte@^3.23.0 || ^4.0.0-next.0 || ^4.0.0", "svelte@^3.54.0 || ^4.0.0", "svelte@^3.54.0 || ^4.0.0-next.0", "svelte@^3.55.0 || ^4.0.0-next.0 || ^4.0.0", "svelte@^4.0.5":
+"svelte@^3.0.0 || ^4.0.0", "svelte@^3.19.0 || ^4.0.0", "svelte@^3.2.0 || ^4.0.0-next.0", "svelte@^3.23.0 || ^4.0.0-next.0 || ^4.0.0", "svelte@^3.54.0 || ^4.0.0", "svelte@^3.54.0 || ^4.0.0-next.0", "svelte@^3.55.0 || ^4.0.0-next.0 || ^4.0.0", "svelte@^4.0.5", "svelte@3.x || 4.x":
   "integrity" "sha512-/evA8U6CgOHe5ZD1C1W3va9iJG7mWflcCdghBORJaAhD2JzrVERJty/2gl0pIPrJYBGZwZycH6onYf+64XXF9g=="
   "resolved" "https://registry.npmjs.org/svelte/-/svelte-4.1.2.tgz"
   "version" "4.1.2"
@@ -3194,6 +3194,11 @@
     "locate-character" "^3.0.0"
     "magic-string" "^0.30.0"
     "periscopic" "^3.1.0"
+
+"sveltekit-superforms@^1.5.1":
+  "integrity" "sha512-OqKzxuL1P29CFiK1CD00JRsvEsRPedvrR0qXmB4uqzXAIjOS+DpLjoEaa6Cnkd4H00fRa2161GcZNeEBue/D3A=="
+  "resolved" "https://registry.npmjs.org/sveltekit-superforms/-/sveltekit-superforms-1.5.1.tgz"
+  "version" "1.5.1"
 
 "swap-case@^2.0.2":
   "integrity" "sha512-kc6S2YS/2yXbtkSMunBtKdah4VFETZ8Oh6ONSmSd9bRxhqTrtARUCBUiWXH3xVPpvR7tz2CSnkuXVE42EcGnMw=="
@@ -3496,3 +3501,8 @@
   "integrity" "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q=="
   "resolved" "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   "version" "0.1.0"
+
+"zod@^3.21.4", "zod@3.x":
+  "integrity" "sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw=="
+  "resolved" "https://registry.npmjs.org/zod/-/zod-3.21.4.tgz"
+  "version" "3.21.4"
