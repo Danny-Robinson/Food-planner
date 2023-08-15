@@ -4,12 +4,17 @@ import { getClient } from '$lib/utils/getClient';
 import type { Load } from '@sveltejs/kit';
 import type { GetIngredientsQuery } from '../../../generated/graphql';
 import { GET_INGREDIENTS_QUERY } from '$lib/queries';
+import { recipeSchema } from '$lib/validationSchemas/recipeSchema';
+import { defaultValues, superValidate } from 'sveltekit-superforms/server';
 
 export const load: Load = async () => {
 	const client = getClient();
 	const { data } = await client.query<GetIngredientsQuery>(GET_INGREDIENTS_QUERY, {});
 	ingredientsStore.set(data?.ingredients || []);
+
+	const form = await superValidate(defaultValues(recipeSchema), recipeSchema);
 	return {
-		props: data
+		props: data,
+		form
 	};
 };

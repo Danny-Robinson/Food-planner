@@ -10,6 +10,7 @@
 	import { ADD_INGREDIENT_MUTATION, DELETE_INGREDIENT_MUTATION, GET_INGREDIENTS_QUERY } from '$lib/queries/index';
 	import type { GetIngredientsQuery, AddIngredientMutation, DeleteIngredientMutation, Ingredients } from '../../generated/graphql';
 	import { ingredientSchema } from '$lib/validationSchemas/ingredientSchema';
+    import { getFormBlur } from '$lib/utils/getFormBlur';
 
 	let ingredients: Ingredients[] = [];
 	$: ingredients = $ingredientsStore;
@@ -17,49 +18,15 @@
 	const client = getClient();
 	const result = $page.data.props;
 
-	type ValidationErrors = Record<string, string[]>;
-	type GenericSuperFormFields = {valid: boolean;
-		posted: boolean;
-		errors: ValidationErrors;
-		data: {};
-		constraints: {}
-	};
-		
-	let formData: {
-		name: string;
-		unit?: string;
-		nameError?: string;
-		unitError?: string;
-		hasInteracted: boolean;
-		hasSubmitted: boolean;  
-	} & GenericSuperFormFields = {
- 		valid: false,
-		posted: false,
-		errors: {},
-		data: {},
-		constraints: {},
-		hasInteracted: false,
-		hasSubmitted: false,
-		...defaultValues(ingredientSchema)
-	};
- 
-	const { form, constraints } = superForm(formData);
- 	const validateForm = (formD: typeof formData) => {
-		formD.nameError = undefined;
-		formD.unitError = undefined;
+	type ValidationErrors = Record<string, string>;
 
-		if (formD.hasInteracted && validationResult && !validationResult.success) {
-			backendErrors = {};
-			validationResult.error.errors.forEach(error => {
-				if (error.path[0] === 'name') {
-					formD.nameError = error.message;
-				}
-				if (error.path[0] === 'unit') {
-					formD.unitError = error.message;
-				}
-			});
-		}
-	}
+	const { form, errors, constraints } = superForm(result.form, {
+		validators: ingredientSchema,
+		validationMethod: 'auto'
+	});
+
+	const { blur, handleBlur } = getFormBlur<typeof $form>($form);
+
 
 	const fetchIngredients = async () => {
 		const { data } = await client.query<GetIngredientsQuery>(GET_INGREDIENTS_QUERY, {}, {
@@ -70,24 +37,17 @@
 	};
 
 	let backendErrors: ValidationErrors = {};   
- 	$: validationResult = ingredientSchema.safeParse($form);
-	$: validateForm(formData);
 
 	const handleBackendError = (error: OperationResult<AddIngredientMutation, AnyVariables>['error']) => {
 		if (error?.message.includes("ingredients_name_key")) {
-			backendErrors.name = ["Ingredient with this name already exists!"];
+			backendErrors.name = "Ingredient with this name already exists!";
 		} else {
 			console.error('Failed to add ingredient:', error);
 		}
 	}
 
 	const add = async () => {
-		formData.hasSubmitted = true;
-
-		if (!validationResult.success) {
-			formData.hasSubmitted = false;
-			return;   
-		}
+ 
 
 		const result = await client.mutation<AddIngredientMutation>(ADD_INGREDIENT_MUTATION, $form);
 		
@@ -97,8 +57,7 @@
 			handleBackendError(result.error);
 		}
   
-		fetchIngredients();
-		formData.hasSubmitted = false;
+		fetchIngredients(); 
 	};
 
 
@@ -125,40 +84,37 @@
 
 	<form on:submit|preventDefault={add}>
 		<div style="display: flex;">
-			<label for="ingredientName">Ingredient Name:</label>
+			<label for="name">Ingredient Name:</label>
 		
 			<input 
 				type="text" 
-				id="ingredientName" 
+				id="name" 
 				bind:value={$form.name} 
-				class:error={formData.nameError || backendErrors.name}
-				on:input={() => {
-					formData.hasInteracted = true;
-					formData.hasSubmitted = false;
-				}}
+				on:blur={handleBlur('name')}
+				{...$constraints.name}
+				class:error={($errors.name || backendErrors.name) && $blur?.name}
 			/>
 	 
-			{#if formData.nameError}
-				<p class="error">{formData.nameError}</p>
-			{:else if backendErrors.name}
+			{#if $errors.name && $blur?.name}
+				<p class="error">{$errors.name}</p>
+			{:else if backendErrors.name && $blur?.name}
 				<p class="error">{backendErrors.name}</p>
 			{/if}
 		</div>
 		<div style="display: flex;">
-			<label for="ingredientUnit">Unit:</label>
+			<label for="unit">Unit:</label>
 			<input 
 				type="text" 
-				id="ingredientUnit" 
+				id="unit" 
 				bind:value={$form.unit} 
 				placeholder="e.g., g, ml, pcs" 
-				class:error={formData.unitError || backendErrors.unit}
-				on:input={() => {
-					formData.hasInteracted = true;
-				}}
+				on:blur={handleBlur('unit')}
+				{...$constraints.unit}
+				class:error={$errors.unit || backendErrors.unit}
 			/>
 	 
-			{#if formData.unitError}
-				<p class="error">{formData.unitError}</p>
+			{#if $errors.unit}
+				<p class="error">{$errors.unit}</p>
 			{:else if backendErrors.unit}
 				<p class="error">{backendErrors.unit}</p>
 			{/if}

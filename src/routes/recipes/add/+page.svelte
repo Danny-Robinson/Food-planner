@@ -5,6 +5,10 @@
     import type {  Ingredients } from '../../../generated/graphql';
 	import { createRecipeWithDetails } from '$lib/utils/createRecipeWithDetails';
 	import { getClient } from '$lib/utils/getClient';
+	import { superForm } from 'sveltekit-superforms/client';
+    import type { PageData } from "./$types";
+	import { recipeSchema } from '$lib/validationSchemas/recipeSchema';
+	import { getFormBlur } from '$lib/utils/getFormBlur';
 
     let recipeName = '';
     let cookingTime = '';
@@ -79,9 +83,27 @@
         allIngredients = get(ingredientsStore);
     });
     $: allIngredients = $ingredientsStore;
+
+    export let data: PageData;
+    const { form, errors, constraints } = superForm(data.form, {
+        validators: recipeSchema,
+    });
+
+ const { blur, handleBlur } = getFormBlur<typeof $form>($form); 
+
+
  </script>
 
 <form on:submit|preventDefault={handleSubmit}>
+    <!-- <TextInput 
+    bind:value={$form.name} 
+    label="Name" 
+    name="name" 
+    errors={$errors} 
+    blur={$blur} 
+    handleBlur={handleBlur('name')} 
+    constraints={$constraints} />
+     -->
     <input bind:value={recipeName} placeholder="Recipe Name" />
     <input type="number" bind:value={cookingTime} placeholder="Cooking Time (mins)" />
 

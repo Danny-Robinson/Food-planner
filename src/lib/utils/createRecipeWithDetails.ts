@@ -72,7 +72,6 @@ export const createRecipeWithDetails = async (client: Client, recipeData: Recipe
         ...instr,
         recipe_id: recipeId
     }));
-    console.log(instructionObjects)
 
     await client.mutation(createInstructionsMutation, {
         objects: instructionObjects
