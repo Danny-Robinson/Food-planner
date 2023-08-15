@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms/client';
+	import { superForm, defaultValues } from 'sveltekit-superforms/client';
+	import type { OperationResult, AnyVariables } from '@urql/svelte';
 
 	import { page } from '$app/stores';
 
@@ -26,24 +27,39 @@
 		
 	let formData: {
 		name: string;
-		unit: string;
+		unit?: string;
 		nameError?: string;
 		unitError?: string;
 		hasInteracted: boolean;
 		hasSubmitted: boolean;  
 	} & GenericSuperFormFields = {
-		name: '',
-		unit: '',
-		valid: false,
+ 		valid: false,
 		posted: false,
 		errors: {},
 		data: {},
 		constraints: {},
 		hasInteracted: false,
-		hasSubmitted: false
+		hasSubmitted: false,
+		...defaultValues(ingredientSchema)
 	};
  
-	const { form } = superForm(formData);
+	const { form, constraints } = superForm(formData);
+ 	const validateForm = (formD: typeof formData) => {
+		formD.nameError = undefined;
+		formD.unitError = undefined;
+
+		if (formD.hasInteracted && validationResult && !validationResult.success) {
+			backendErrors = {};
+			validationResult.error.errors.forEach(error => {
+				if (error.path[0] === 'name') {
+					formD.nameError = error.message;
+				}
+				if (error.path[0] === 'unit') {
+					formD.unitError = error.message;
+				}
+			});
+		}
+	}
 
 	const fetchIngredients = async () => {
 		const { data } = await client.query<GetIngredientsQuery>(GET_INGREDIENTS_QUERY, {}, {
@@ -55,22 +71,15 @@
 
 	let backendErrors: ValidationErrors = {};   
  	$: validationResult = ingredientSchema.safeParse($form);
-	$: {
-		formData.nameError = undefined;
-		formData.unitError = undefined;
+	$: validateForm(formData);
 
-		if (formData.hasInteracted && validationResult && !validationResult.success) {
-			validationResult.error.errors.forEach(error => {
-				if (error.path[0] === 'name') {
-					formData.nameError = error.message;
-				}
-				if (error.path[0] === 'unit') {
-					formData.unitError = error.message;
-				}
-			});
+	const handleBackendError = (error: OperationResult<AddIngredientMutation, AnyVariables>['error']) => {
+		if (error?.message.includes("ingredients_name_key")) {
+			backendErrors.name = ["Ingredient with this name already exists!"];
+		} else {
+			console.error('Failed to add ingredient:', error);
 		}
 	}
-
 
 	const add = async () => {
 		formData.hasSubmitted = true;
@@ -85,15 +94,9 @@
 		backendErrors = {};
 
 		if (result.error) {
-			if (result.error.message.includes("ingredients_name_key")) {
-				backendErrors.name = ["Ingredient with this name already exists!"];
-			} else {
-				console.error('Failed to add ingredient:', result.error);
-			}
-			formData.hasSubmitted = false;
-			return;
+			handleBackendError(result.error);
 		}
-
+  
 		fetchIngredients();
 		formData.hasSubmitted = false;
 	};
