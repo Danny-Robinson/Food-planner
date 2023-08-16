@@ -1,29 +1,27 @@
-import { goto } from "$app/navigation";
-import type { Client } from "@urql/svelte";
+import { goto } from '$app/navigation';
+import type { Client } from '@urql/svelte';
 
 type IngredientInput = {
-    ingredient_id: number;
-    quantity: number;
- };
+	ingredient_id: number;
+	quantity: number;
+};
 
 type InstructionInput = {
-    step_number: number;
-    description: string;
+	step_number: number;
+	description: string;
 };
 
 type RecipeData = {
-    name: string;
-    cookingTime: number;
-    ingredients: IngredientInput[];
-    instructions: InstructionInput[];
+	name: string;
+	cookingTime: number;
+	ingredients: IngredientInput[];
+	instructions: InstructionInput[];
 };
 
 export const createRecipeWithDetails = async (client: Client, recipeData: RecipeData) => {
-    // Destructure the input data
-    const { name, cookingTime, ingredients, instructions } = recipeData;
+	const { name, cookingTime, ingredients, instructions } = recipeData;
 
-    // Create the recipe first
-    const createRecipeMutation = `
+	const createRecipeMutation = `
         mutation CreateRecipe($name: String!, $cookingTime: Int!) {
             insert_recipes_one(object: {name: $name, cooking_time: $cookingTime}) {
                 id
@@ -31,15 +29,15 @@ export const createRecipeWithDetails = async (client: Client, recipeData: Recipe
         }
     `;
 
-    const response = await client.mutation(createRecipeMutation, {
-        name,
-        cookingTime,
-     });
+	const response = await client.mutation(createRecipeMutation, {
+		name,
+		cookingTime
+	});
+	console.log('Response after creating recipe:', response);
 
-    const recipeId = response.data.insert_recipes_one.id;
+	const recipeId = response.data.insert_recipes_one.id;
 
-    // Now insert the recipe's associated ingredients
-    const createRecipeIngredientsMutation = `
+	const createRecipeIngredientsMutation = `
         mutation InsertRecipeIngredients($objects: [recipe_ingredients_insert_input!]!) {
             insert_recipe_ingredients(objects: $objects) {
                 affected_rows
@@ -47,20 +45,21 @@ export const createRecipeWithDetails = async (client: Client, recipeData: Recipe
         }
     `;
 
-    const recipeIngredientsObjects = ingredients.map(ing => ({
-        ingredient_id: ing.ingredient_id,
-        recipe_id: recipeId,
-        quantity: ing.quantity,
-     }));
+	const recipeIngredientsObjects = ingredients.map((ing) => ({
+		ingredient_id: ing.ingredient_id,
+		recipe_id: recipeId,
+		quantity: ing.quantity
+	}));
 
-     console.log(recipeIngredientsObjects)
+	console.log('Recipe Ingredients to be inserted:', recipeIngredientsObjects);
 
-    await client.mutation(createRecipeIngredientsMutation, {
-        objects: recipeIngredientsObjects
-    });
+	const ingredientsResponse = await client.mutation(createRecipeIngredientsMutation, {
+		objects: recipeIngredientsObjects
+	});
 
-    // Now insert the instructions
-    const createInstructionsMutation = `
+	console.log('Response after inserting ingredients:', ingredientsResponse);
+
+	const createInstructionsMutation = `
         mutation InsertInstructions($objects: [instructions_insert_input!]!) {
             insert_instructions(objects: $objects) {
                 affected_rows
@@ -68,15 +67,17 @@ export const createRecipeWithDetails = async (client: Client, recipeData: Recipe
         }
     `;
 
-    const instructionObjects = instructions.map(instr => ({
-        ...instr,
-        recipe_id: recipeId
-    }));
+	const instructionObjects = instructions.map((instr) => ({
+		...instr,
+		recipe_id: recipeId
+	}));
 
-    await client.mutation(createInstructionsMutation, {
-        objects: instructionObjects
-    });
+	const instructionsResponse = await client.mutation(createInstructionsMutation, {
+		objects: instructionObjects
+	});
 
-    goto(`/recipes/${recipeId}`)
-    return recipeId; // Return the ID of the created recipe
-}
+	console.log('Response after inserting instructions:', instructionsResponse);
+
+	goto(`/recipes/${recipeId}`);
+	return recipeId;
+};
