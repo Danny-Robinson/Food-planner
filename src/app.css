@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	@font-face {
+		font-family: 'Silka';
+		src: url('/fonts/silka-thin-webfont.ttf') format('truetype');
+		font-weight: 100;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Silka';
+		src: url('/fonts/silka-extralight-webfont.ttf') format('truetype');
+		font-weight: 200;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Silka';
+		src: url('/fonts/silka-light-webfont.ttf') format('truetype');
+		font-weight: 300;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Silka';
+		src: url('/fonts/silka-regular-webfont.ttf') format('truetype');
+		font-weight: 400;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Silka';
+		src: url('/fonts/silka-medium-webfont.ttf') format('truetype');
+		font-weight: 500;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Silka';
+		src: url('/fonts/silka-semibold-webfont.ttf') format('truetype');
+		font-weight: 600;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Silka';
+		src: url('/fonts/silka-bold-webfont.ttf') format('truetype');
+		font-weight: 700;
+		font-display: swap;
+		font-style: normal;
+	}
+	@font-face {
+		font-family: 'Silka';
+		src: url('/fonts/silka-black-webfont.ttf') format('truetype');
+		font-weight: 800;
+		font-style: normal;
+		font-display: swap;
+	}
+}
+
+/* PDP markdown paragraphs */
+#description > * {
+	margin-bottom: 12px;
+}
+
+/* PDP image gallery dialog */
+.sc-carousel__carousel-container {
+	height: 100%;
+}
+
+.sc-carousel__content-container {
+	height: 100%;
+}
