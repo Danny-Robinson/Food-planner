@@ -151,7 +151,7 @@
 				placeholder="Ingredient Name"
 				list="ingredient-list"
 			/>
-			<input type="number" bind:value={ingredient.quantity} placeholder="Quantity" />
+			<input type="float" bind:value={ingredient.quantity} placeholder="Quantity" />
 			<button on:click|preventDefault={() => removeIngredient(i)}>Delete</button>
 		</div>
 	{/each}

@@ -1856,7 +1856,7 @@ export type Subscription_RootRecipes_StreamArgs = {
 
 export type AddIngredientMutationVariables = Exact<{
   name: Scalars['String']['input'];
-  unit: Scalars['String']['input'];
+  unit?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -1875,6 +1875,20 @@ export type DeleteRecipeMutationVariables = Exact<{
 
 
 export type DeleteRecipeMutation = { __typename?: 'mutation_root', delete_recipes_by_pk?: { __typename?: 'recipes', id: number } | null };
+
+export type EditIngredientMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  unit?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type EditIngredientMutation = { __typename?: 'mutation_root', update_ingredients_by_pk?: { __typename?: 'ingredients', id: number } | null };
+
+export type GetAllRecipeDetailsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllRecipeDetailsQuery = { __typename?: 'query_root', recipes: Array<{ __typename?: 'recipes', id: number, name: string, cooking_time: number, recipes_recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', quantity: number, recipe_ingredients_ingredient: { __typename?: 'ingredients', id: number, name: string, unit?: string | null } }>, recipes_instructions: Array<{ __typename?: 'instructions', step_number: number, description: string }> }> };
 
 export type GetIngredientsQueryVariables = Exact<{ [key: string]: never; }>;
 
