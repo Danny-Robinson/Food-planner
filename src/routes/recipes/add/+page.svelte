@@ -12,6 +12,7 @@
 	import TextInput from '$lib/components/form/TextInput.svelte';
 	import type { NestedErrors } from '$lib/types/formTypes';
 	import { getIngredientDisplayName } from '$lib/utils/getIngredientDisplayName';
+	import AutoComplete from 'simple-svelte-autocomplete';
 
 	const addInstruction = () => {
 		$form.instructions = [
@@ -41,6 +42,14 @@
 	};
 
 	const handleSubmit = async () => {
+		// Update the $form.ingredients list with the selected ingredients details
+		$form.ingredients.forEach((ingredient, index) => {
+			if (selectedIngredientObjects[index]) {
+				ingredient.ingredient_id = selectedIngredientObjects[index].id;
+				ingredient.displayName = getIngredientLabel(selectedIngredientObjects[index]);
+			}
+		});
+
 		const recipeData = {
 			name: $form.name,
 			cookingTime: $form.cookingTime,
@@ -56,19 +65,6 @@
 
 		createRecipeWithDetails(getClient(), recipeData);
 		console.log('Submitted Recipe Data:', recipeData);
-	};
-
-	const setIngredientDetailsByName = (ingredient: (typeof $form.ingredients)[0]) => {
-		const matchedIngredient = allIngredients.find(
-			(ing) => `${ing.name} (${ing.unit})` === ingredient.displayName
-		);
-		if (matchedIngredient) {
-			ingredient.ingredient_id = matchedIngredient.id;
-			ingredient.displayName = getIngredientDisplayName(matchedIngredient);
-		} else {
-			ingredient.ingredient_id = 0;
-			ingredient.displayName = '';
-		}
 	};
 
 	// All available ingredients (from the BE)
@@ -92,7 +88,25 @@
 			}
 		}
 	};
-	$: console.log(allIngredients);
+
+	let selectedIngredientObjects: Record<number, Ingredients> = {}; // Using an object map here
+	let highlightedIngredient: Ingredients | null = null;
+	let selectedIngredientValue: string = ''; // This should be the display value of the ingredient, i.e., name
+
+	function getIngredientLabel(ingredient: Ingredients) {
+		return `${ingredient.name}${ingredient.unit ? ` (${ingredient.unit})` : ''}`;
+	}
+
+	$: extendedIngredients = allIngredients.map((ingredient) => ({
+		...ingredient,
+		displayName: getIngredientLabel(ingredient)
+	}));
+
+	function setIngredientDetailsByObject(selectedIngredient: Ingredients, index: number) {
+		const ingredient = $form.ingredients[index];
+		ingredient.ingredient_id = selectedIngredient.id;
+		ingredient.displayName = getIngredientLabel(selectedIngredient);
+	}
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
@@ -144,12 +158,19 @@
 
 	{#each $form.ingredients as ingredient, i}
 		<div class="ingredient-item">
-			<input
-				bind:value={ingredient.displayName}
-				on:input={() => setIngredientDetailsByName(ingredient)}
-				on:change={() => setIngredientDetailsByName(ingredient)}
-				placeholder="Ingredient Name"
-				list="ingredient-list"
+			<AutoComplete
+				placeholder="Ingredient"
+				items={extendedIngredients}
+				bind:selectedItem={selectedIngredientObjects[i]}
+				bind:highlightedItem={highlightedIngredient}
+				bind:value={selectedIngredientValue}
+				labelFieldName="displayName"
+				valueFieldName="id"
+				keywordsFunction={(ingredient) =>
+					ingredient.name + (ingredient.unit ? ` (${ingredient.unit})` : '')}
+				on:change={() =>
+					selectedIngredientObjects[i] &&
+					setIngredientDetailsByObject(selectedIngredientObjects[i], i)}
 			/>
 			<input type="float" bind:value={ingredient.quantity} placeholder="Quantity" />
 			<button on:click|preventDefault={() => removeIngredient(i)}>Delete</button>

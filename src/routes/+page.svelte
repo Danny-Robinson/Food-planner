@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import type { GetAllRecipeDetailsQuery } from '../generated/graphql';
 
-	type Recipe = GetAllRecipeDetailsQuery['recipes'][0] & { servings: number }; // Added servings
+	type Recipe = GetAllRecipeDetailsQuery['recipes'][0] & { servings: number };
 	let allRecipes: Recipe[] = $page.data.props.recipes?.map((r) => ({ ...r, servings: 4 })) || []; // Default servings to 4
 	let selectedRecipeIds: number[] = [];
 
