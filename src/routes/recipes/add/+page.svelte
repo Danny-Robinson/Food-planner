@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { ingredientsStore } from '$lib/stores/ingredientsStore';
-	import { get } from 'svelte/store';
-	import { onMount } from 'svelte';
 	import type { Ingredients } from '../../../generated/graphql';
 	import { createRecipeWithDetails } from '$lib/utils/createRecipeWithDetails';
 	import { getClient } from '$lib/utils/getClient';

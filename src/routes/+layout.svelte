@@ -1,5 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
+	import '../app.css';
 </script>
 
 <header>
@@ -12,7 +13,10 @@
 </header>
 
 <main>
-	<slot />
+	<!-- adding padding around my page content -->
+	<div class="container">
+		<slot />
+	</div>
 </main>
 
 <style>
@@ -30,5 +34,9 @@
 
 	nav a:hover {
 		text-decoration: underline;
+	}
+
+	.container {
+		padding: 0 15px;
 	}
 </style>
