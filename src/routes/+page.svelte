@@ -1,9 +1,18 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import type { GetAllRecipeDetailsQuery } from '../generated/graphql';
+	import { createCheckbox, melt } from '@melt-ui/svelte';
+
+	const {
+		elements: { root: checkboxRoot, input: checkboxInput }
+	} = createCheckbox();
 
 	type Recipe = GetAllRecipeDetailsQuery['recipes'][0] & { servings: number };
-	let allRecipes: Recipe[] = $page.data.props.recipes?.map((r) => ({ ...r, servings: 4 })) || []; // Default servings to 4
+	let allRecipes: Recipe[] =
+		$page.data.props.recipes?.map((r: GetAllRecipeDetailsQuery['recipes']) => ({
+			...r,
+			servings: 4
+		})) || []; // Default servings to 4
 	let selectedRecipeIds: number[] = [];
 
 	function toggleRecipeSelection(recipeId: number) {
@@ -48,24 +57,23 @@
 </script>
 
 <h1>Select Recipes</h1>
-<ul>
+<div use:melt={$checkboxRoot}>
 	{#each allRecipes as recipe}
-		<li>
-			<label>
-				<input
-					type="checkbox"
-					checked={selectedRecipeIds.includes(recipe.id)}
-					on:change={() => toggleRecipeSelection(recipe.id)}
-				/>
-				{recipe.name}
-			</label>
-			<label>
-				Servings:
+		<div>
+			<input
+				use:melt={$checkboxInput}
+				type="checkbox"
+				checked={selectedRecipeIds.includes(recipe.id)}
+				on:change={() => toggleRecipeSelection(recipe.id)}
+			/>
+			<label>{recipe.name}</label>
+			<div>
+				<label>Servings:</label>
 				<input type="number" bind:value={recipe.servings} min="1" style="width: 50px;" />
-			</label>
-		</li>
+			</div>
+		</div>
 	{/each}
-</ul>
+</div>
 
 <h2>Your Shopping List</h2>
 <ul>
@@ -73,39 +81,3 @@
 		<li>{ingredient}</li>
 	{/each}
 </ul>
-
-<style>
-	h1,
-	h2 {
-		font-family: Arial, sans-serif;
-		margin-bottom: 20px;
-	}
-
-	ul {
-		list-style-type: none;
-		padding: 0;
-	}
-
-	li {
-		font-family: Arial, sans-serif;
-		font-size: 16px;
-		margin-bottom: 10px;
-		display: flex;
-		align-items: center;
-	}
-
-	input[type='checkbox'] {
-		margin-right: 10px;
-	}
-
-	input[type='number'] {
-		margin-left: 10px;
-		padding: 5px;
-		border: 1px solid #ccc;
-		border-radius: 4px;
-	}
-
-	label {
-		margin-right: 20px;
-	}
-</style>
