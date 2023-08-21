@@ -156,7 +156,7 @@
 
 	{#each $form.ingredients as ingredient, index}
 		<div class="ingredient-item">
-			<IngredientCombobox {ingredient} {index} />
+			<IngredientCombobox {ingredient} {index} {setIngredientDetailsByObject} />
 			<input type="float" bind:value={ingredient.quantity} placeholder="Quantity" />
 			<button on:click|preventDefault={() => removeIngredient(index)}>Delete</button>
 		</div>
