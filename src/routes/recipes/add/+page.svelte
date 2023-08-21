@@ -10,7 +10,7 @@
 	import TextInput from '$lib/components/form/TextInput.svelte';
 	import type { NestedErrors } from '$lib/types/formTypes';
 	import { getIngredientDisplayName } from '$lib/utils/getIngredientDisplayName';
-	import AutoComplete from 'simple-svelte-autocomplete';
+	import IngredientCombobox from '$lib/components/form/IngredientCombobox.svelte';
 
 	const addInstruction = () => {
 		$form.instructions = [
@@ -154,24 +154,11 @@
 
 	<button on:click|preventDefault={addInstruction}>Add Instruction</button>
 
-	{#each $form.ingredients as ingredient, i}
+	{#each $form.ingredients as ingredient, index}
 		<div class="ingredient-item">
-			<AutoComplete
-				placeholder="Ingredient"
-				items={extendedIngredients}
-				bind:selectedItem={selectedIngredientObjects[i]}
-				bind:highlightedItem={highlightedIngredient}
-				bind:value={selectedIngredientValue}
-				labelFieldName="displayName"
-				valueFieldName="id"
-				keywordsFunction={(ingredient) =>
-					ingredient.name + (ingredient.unit ? ` (${ingredient.unit})` : '')}
-				on:change={() =>
-					selectedIngredientObjects[i] &&
-					setIngredientDetailsByObject(selectedIngredientObjects[i], i)}
-			/>
+			<IngredientCombobox {ingredient} {index} />
 			<input type="float" bind:value={ingredient.quantity} placeholder="Quantity" />
-			<button on:click|preventDefault={() => removeIngredient(i)}>Delete</button>
+			<button on:click|preventDefault={() => removeIngredient(index)}>Delete</button>
 		</div>
 	{/each}
 
