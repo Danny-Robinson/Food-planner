@@ -154,7 +154,7 @@
 
 	<button on:click|preventDefault={addInstruction}>Add Instruction</button>
 
-	{#each $form.ingredients as ingredient, index}
+	{#each $form.ingredients as ingredient, index (index)}
 		<div class="ingredient-item">
 			<IngredientCombobox {ingredient} {index} {setIngredientDetailsByObject} />
 			<input type="float" bind:value={ingredient.quantity} placeholder="Quantity" />
