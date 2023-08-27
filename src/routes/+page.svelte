@@ -54,6 +54,14 @@
 			return `${ingredient.quantity} ${unit} of ${name}`;
 		});
 	}
+
+	let checkedStates: boolean[] = [];
+
+	$: checkedStates = shoppingList.map(() => false);
+
+	const handleCheckboxChange = (index: number) => {
+		checkedStates[index] = !checkedStates[index];
+	};
 </script>
 
 <h1>Select Recipes</h1>
@@ -77,7 +85,17 @@
 
 <h2>Your Shopping List</h2>
 <ul>
-	{#each shoppingList as ingredient}
-		<li>{ingredient}</li>
+	{#each shoppingList as ingredient, index}
+		<li class={checkedStates[index] ? 'crossed-out' : ''}>
+			<input type="checkbox" on:change={() => handleCheckboxChange(index)} />
+			{ingredient}
+		</li>
 	{/each}
 </ul>
+
+<style>
+	.crossed-out {
+		text-decoration: line-through;
+		opacity: 0.6;
+	}
+</style>

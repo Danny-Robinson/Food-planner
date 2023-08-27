@@ -1,22 +1,6 @@
 import { goto } from '$app/navigation';
+import type { RecipeData } from '$lib/types/recipeDetailed';
 import type { Client } from '@urql/svelte';
-
-type IngredientInput = {
-	ingredient_id: number;
-	quantity: number;
-};
-
-type InstructionInput = {
-	step_number: number;
-	description: string;
-};
-
-type RecipeData = {
-	name: string;
-	cookingTime: number;
-	ingredients: IngredientInput[];
-	instructions: InstructionInput[];
-};
 
 export const createRecipeWithDetails = async (client: Client, recipeData: RecipeData) => {
 	const { name, cookingTime, ingredients, instructions } = recipeData;
