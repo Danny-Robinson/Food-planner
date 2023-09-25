@@ -8,9 +8,8 @@
 
 	let recipe: DetailedRecipe | null;
 	const client = getClient();
-	let servings = 4; // default servings
 
-	// Subscribe to page store to get the recipe data
+	$: servings = 4;
 	$: recipe = $page.data.props.recipe;
 	async function deleteRecipe() {
 		const confirmed = confirm('Are you sure you want to delete this recipe?');
@@ -29,8 +28,34 @@
 		}
 	}
 
-	function updateServings(event) {
-		servings = +event.target.value;
+	function updateServings(event: Event) {
+		const target = event.target as HTMLSelectElement;
+		servings = +target?.value;
+	}
+
+	function formatIngredientForServings(ingredient: string, servings: number): string {
+		const regex = /{(\d+\.?\d*)([a-zA-Z]*)}/g;
+		return ingredient.replace(regex, (_, amount, unit) => {
+			const newAmount = parseFloat(amount) * servings;
+			return `${roundToTwoDecimal(newAmount)}${unit}`; // Updated here
+		});
+	}
+
+	function roundToTwoDecimal(value: number): string {
+		return parseFloat(value.toFixed(2)).toString();
+	}
+
+	$: formattedInstructions = [] as string[];
+	$: checkedSteps = [] as boolean[];
+
+	$: if (recipe?.recipes_instructions) {
+		formattedInstructions = recipe.recipes_instructions.map((instruction) =>
+			formatIngredientForServings(instruction.description, servings)
+		);
+
+		if (checkedSteps?.length !== formattedInstructions?.length) {
+			checkedSteps = new Array(formattedInstructions.length).fill(false);
+		}
 	}
 </script>
 
@@ -47,7 +72,8 @@
 	<ul>
 		{#each recipe.recipes_recipe_ingredients as ingredient}
 			<li>
-				{ingredient.quantity * servings}{ingredient.recipe_ingredients_ingredient.unit
+				{roundToTwoDecimal(ingredient.quantity * servings)}{ingredient.recipe_ingredients_ingredient
+					.unit
 					? `${ingredient.recipe_ingredients_ingredient.unit} of `
 					: ' '}{ingredient.recipe_ingredients_ingredient.name}
 			</li>
@@ -55,12 +81,16 @@
 	</ul>
 	<h2>Instructions</h2>
 	<ol>
-		{#each recipe.recipes_instructions as instruction}
-			<li>{instruction.description}</li>
+		{#each formattedInstructions as instruction, index}
+			<li>
+				<input type="checkbox" bind:checked={checkedSteps[index]} />
+				<span style="text-decoration: {checkedSteps[index] ? 'line-through' : 'none'};"
+					>{@html instruction}</span
+				>
+			</li>
 		{/each}
 	</ol>
 
-	<!-- Edit and Delete Buttons -->
 	<a href={`/recipes/${recipe.id}/edit`}>Edit</a>
 	<button on:click={deleteRecipe}>Delete</button>
 {/if}
