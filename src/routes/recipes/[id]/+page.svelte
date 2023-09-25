@@ -8,6 +8,7 @@
 
 	let recipe: DetailedRecipe | null;
 	const client = getClient();
+	let servings = 4; // default servings
 
 	// Subscribe to page store to get the recipe data
 	$: recipe = $page.data.props.recipe;
@@ -27,16 +28,26 @@
 			}
 		}
 	}
+
+	function updateServings(event) {
+		servings = +event.target.value;
+	}
 </script>
 
 {#if recipe && recipe.recipes_recipe_ingredients && recipe.recipes_instructions}
 	<h1>{recipe.name}</h1>
 	<p>Cooking Time: {recipe.cooking_time} mins</p>
+	<label for="servings">Servings: </label>
+	<select id="servings" on:change={updateServings}>
+		{#each [1, 2, 3, 4, 5, 6] as serving}
+			<option value={serving} selected={serving === servings}>{serving}</option>
+		{/each}
+	</select>
 	<h2>Ingredients</h2>
 	<ul>
 		{#each recipe.recipes_recipe_ingredients as ingredient}
 			<li>
-				{ingredient.quantity}{ingredient.recipe_ingredients_ingredient.unit
+				{ingredient.quantity * servings}{ingredient.recipe_ingredients_ingredient.unit
 					? `${ingredient.recipe_ingredients_ingredient.unit} of `
 					: ' '}{ingredient.recipe_ingredients_ingredient.name}
 			</li>
